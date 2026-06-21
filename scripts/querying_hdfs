@@ -1,0 +1,43 @@
+hadoop fs -mkdir /user/ish_cali_92831/data
+
+hadoop fs -put retailstore.csv /user/ish_cali_92831/data
+
+
+hadoop fs -cat retailstore.csv
+
+hadoop fs -cat /user/ish_cali_92831/data/retailstore.csv
+
+hive
+
+dfs -ls data/
+dfs -ls /user/ish_cali_92831/data/
+
+
+create database if not exists ish_project;
+
+show databases;
+
+use ish_project;
+
+create table retailcust (age INT, salary FLOAT,gender String,country String, purchased String) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' LOCATION '/user/ish_cali_92831/data/' TBLPROPERTIES ("skip.header.line.count"="1") ;
+
+show tables;
+
+select * from retailcust;
+
+select age, country from retailcust where salary > 20000;
+
+drop table retailcust;
+
+dfs -ls data/
+dfs -ls /user/ish_cali_92831/data/
+
+create external table retailcustext (age INT, salary FLOAT,gender String,country String, purchased String) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' LOCATION '/user/ish_projectskill/data/' TBLPROPERTIES ("skip.header.line.count"="1") ;
+
+select * from retailcustext;
+
+drop table retailcustext;
+
+dfs -ls /user/ish_cali_92831/data/
+
+dfs -ls /user/ish_cali_92831/data/retailstore.csv
