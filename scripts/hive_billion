@@ -1,0 +1,36 @@
+
+ 
+unzip retailstore_5mn.zip
+
+head -10 retailstore_5mn.csv
+
+for i in {1..200}; do cp retailstore_5mn.csv "retailstore_5mn_$i.csv" ; done
+
+
+hadoop fs -mkdir /user/ish_cali_92831
+ 
+hadoop fs -mkdir /user/ish_cali_92831/retail
+hadoop fs -mkdir /user/ish_cali_92831/country
+
+ 
+for i in {1..200}; do hadoop fs -put "retailstore_5mn_$i.csv" retail  ; done
+ 
+
+
+hive
+
+create database ish_project;
+
+use ish_project;
+  
+  
+create table retailcust (custId INT, age INT, salary FLOAT,gender String,country String) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' LOCATION '/user/ish_cali_92831/retail/' TBLPROPERTIES ("skip.header.line.count"="1") ;
+ 
+
+
+
+create table countryavgsalary (country String, avg_salary double) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' LOCATION '/user/ish_cali_92831/country/' ;
+
+insert into countryavgsalary select country,avg(salary) from retailcust group by country;
+
+select * from countryavgsalary;
