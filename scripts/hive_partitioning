@@ -1,0 +1,62 @@
+
+unzip retailstore_large.zip
+
+ls -lrt
+
+hadoop fs -mkdir /user/ish_cali_92831
+
+hadoop fs -mkdir /user/ish_cali_92831/retailcust
+
+hadoop fs -put retailstore_large.csv /user/ish_cali_92831/retailcust
+
+==============================
+
+hive
+
+create database if not exists ish_project;
+
+show databases;
+
+use ish_project;
+
+create external table retailcustext_large (customerid INT, age INT, salary FLOAT,gender String,country String) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' LOCATION '/user/ish_cali_92831/retailcust/' TBLPROPERTIES ("skip.header.line.count"="1") ;
+
+select count(*) from retailcustext_large ;
+
+select * from retailcustext_large limit 10;
+
+select count(*) from retailcustext_large where country = 'Germany';
+
+===============================================================================================================
+================================================Hive Paritioning ==============================================
+===============================================================================================================
+===============================================================================================================
+===============================================================================================================
+
+set hive.exec.dynamic.partition=true;
+
+set hive.exec.dynamic.partition.mode=nonstrict;
+
+create external table retailcustext_large_partitioned (customerid INT, age INT, salary FLOAT,gender String) partitioned by (country String) location  '/user/ish_cali_92831/retailcust-partitioned/';
+
+======================================
+hadoop fs -ls /user/ish_cali_92831/retailcust-partitioned/
+===========================================
+
+insert into table retailcustext_large_partitioned partition(country) 
+select * from retailcustext_large;
+
+=======================================
+hadoop fs -ls /user/ish_cali_92831/retailcust-partitioned/country=Germany
+
+
+========================================
+
+show partitions retailcustext_large_partitioned;
+
+
+select count(*) from retailcustext_large_partitioned ;
+
+select * from retailcustext_large_partitioned limit 10;
+
+select count(*) from retailcustext_large_partitioned where country = 'Germany';
